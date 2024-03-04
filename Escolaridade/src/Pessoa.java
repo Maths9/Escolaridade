@@ -5,13 +5,20 @@ public abstract class Pessoa {
     private int idade;
     private String cpf;
 
+    private String senha;
+
+    private String cargo;
+
+
+
     //construtor que contém informações em comum(professor/aluno)
-    public Pessoa(String nome, String sexo, int idade, String cpf){
+    public Pessoa(String nome, String sexo, int idade, String cpf, String senha, String cargo){
         this.cpf = cpf;
         this.idade = idade;
         this.nome = nome;
         this.sexo = sexo;
-
+        this.senha = senha;
+        this.cargo = cargo;
     }
     //métodos get e sets
     public String getNome() {
@@ -39,5 +46,11 @@ public abstract class Pessoa {
         this.cpf = cpf;
     }
 
-    
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
 }
