@@ -10,9 +10,10 @@ public class Escolaridade {
         int opcao = -1;
 
         System.out.println("Bem vindo ao sistema da Escolaridade");
-        System.out.println("---------------------------");
+        System.out.println("-------------------------------------");
 
         //Menu principal
+        //tratar a exceção de uso de letras no menu principal
         while (opcao != 0) {
             System.out.println("Menu:");
             System.out.println("1- Login");
@@ -27,6 +28,11 @@ public class Escolaridade {
             }
             if(opcao==2){
                 this.cadastrarUsuario(sc);
+            }
+            if(opcao>2||opcao<0){
+                System.out.println(" ");
+                System.out.println("Digite uma opção válida!");
+                System.out.println("------------------------");
             }
 
         }
@@ -50,6 +56,7 @@ public class Escolaridade {
         }
     }
     //Menu do professor
+    // Falta Adicionar metodo de Adicionar nota e consultar turmas
     public void menuProfessor(Scanner sc, Professor professor){
         System.out.println("1- Adicionar nota:");
         System.out.println("2- Consultar lista da turma:");
@@ -77,21 +84,22 @@ public class Escolaridade {
         int idade = 0;
         //LEMBRAR DE: VERIFICAR SE O CPF CONTÉM APENAS NÚMEROS
         try{
-            System.out.println("Digite seu CPF:");
+            System.out.println("Digite seu CPF (xxxxxxxxxxx):");
             cpf = sc.nextLine();
             if(cpf.length()==11){
+                // tentar criar pasta no final apenas
             if(new File("dados/"+cpf).mkdir()){
                 System.out.println("Digite uma senha:");
                 senha = sc.nextLine();
-            System.out.println("Digite seu nome:");
+            System.out.println("Digite seu primeiro nome:");
             nome = sc.nextLine();
-            System.out.println("Digite sua idade:");
+            System.out.println("Digite sua idade (xx):");
             idade = sc.nextInt();
             sc.nextLine();
-            System.out.println("Digite seu sexo:");
+            System.out.println("Digite seu sexo (masculino/feminino):");
             sexo = sc.nextLine();
             //verificar se é aluno ou professor
-                System.out.println("Digite o cargo:");
+                System.out.println("Digite o cargo (Aluno/Professor):");
             cargo = sc.nextLine();
             } else{
                 System.out.println("O usuário já existe!");
@@ -117,12 +125,16 @@ public class Escolaridade {
                     writer.newLine();
                     System.out.println("Digite suas turmas:");
                     String turmas = sc.nextLine();
+                    System.out.println("----------------------");
+                    System.out.println("Usuário cadastrado!");
                     writer.write(turmas);
 
                 }
                 if(cargo.toLowerCase().equals("aluno")){
                     System.out.println("Digite a turma:");
                     String turma = sc.nextLine();
+                    System.out.println("----------------------");
+                    System.out.println("Usuário cadastrado!");
                     writer.newLine();
                     writer.write(turma);
                 }
@@ -157,7 +169,9 @@ public class Escolaridade {
 
                 String[] dados = linhaDados.split(" ");
                 if(senha.equals(dados[1]) && cpf.equals(dados[0])){
+                    System.out.println("-------------------------");
                     System.out.println("Bem vindo "+dados[2]+"!");
+                    System.out.println("");
                     if(dados[5].equalsIgnoreCase("professor")){
                         //CORRIGIR TURMAS
                         //cpf, senha, nome,idade, sexo, cargo, formacao, turma
@@ -168,7 +182,6 @@ public class Escolaridade {
                         this.menuAluno(sc, new Aluno(dados[0],dados[2],Integer.parseInt(dados[3]),dados[4],dados[5],turmas));
                     }
                     logado = true;
-
 
             }
             if(!logado){
