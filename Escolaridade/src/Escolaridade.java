@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+//LEMBRAR DE FAZER TRATAMENTO DE EXCESSÕES NOS MENUS
 public class Escolaridade {
     public void menuPrincipal(){
 
@@ -20,8 +21,10 @@ public class Escolaridade {
             System.out.println("2- Cadastrar usuário");
             System.out.println("0- Sair");
             System.out.println("Digite a opção que deseja: ");
-            opcao = sc.nextInt();
-            sc.nextLine();
+            try{
+
+                opcao = sc.nextInt();
+                sc.nextLine();
 
             if(opcao == 1) {
                 this.entrarUsuario(sc);
@@ -29,50 +32,76 @@ public class Escolaridade {
             if(opcao==2){
                 this.cadastrarUsuario(sc);
             }
-            if(opcao>2||opcao<0){
+            if(opcao>2||opcao<0) {
                 System.out.println(" ");
                 System.out.println("Digite uma opção válida!");
                 System.out.println("------------------------");
             }
+            } catch(InputMismatchException exception){
+                System.out.println("ERRO:"+"Digite um número inteiro!");
+                sc.nextLine();
+            }
 
         }
+        System.out.println("Programa finalizado!");
     }
     //Menu do aluno
     public void menuAluno(Scanner sc, Aluno aluno){
+        int opcao = -1;
+        //System.out.println(aluno);
+        while(opcao!=0){
         System.out.println("1- Consultar boletim");
         System.out.println("2- Solicitar comprovante de matrícula");
         System.out.println("0- Sair");
         System.out.println("Digite a opção que deseja: ");
-        int opcao = sc.nextInt();
-        sc.nextLine();
 
-        switch(opcao){
-            case 1:
-                aluno.consultarBoletim();
-                break;
-            case 2:
-                aluno.consultarComprovante();
-                break;
+        try {
+            opcao = sc.nextInt();
+
+            sc.nextLine();
+
+            switch (opcao) {
+                case 1:
+                    aluno.consultarBoletim();
+                    break;
+                case 2:
+                    aluno.consultarComprovante();
+                    break;
+            }
+        } catch(InputMismatchException exception){
+            System.out.println("ERRO:"+"Digite um número inteiro!");
+        }
+
         }
     }
     //Menu do professor
     // Falta Adicionar metodo de Adicionar nota e consultar turmas
     public void menuProfessor(Scanner sc, Professor professor){
+        int opcao = -1;
+        //System.out.println(professor);
+        while(opcao!=0){
         System.out.println("1- Adicionar nota:");
-        System.out.println("2- Consultar lista da turma:");
+        System.out.println("2- Consultar lista das turmas:");
         System.out.println("0- Sair");
         System.out.println("Digite a opção desejada:");
-        int opcao = sc.nextInt();
-        sc.nextLine();
+        try {
+            opcao = sc.nextInt();
+            sc.nextLine();
 
-        switch(opcao){
-            case 1:
-                professor.adicionarNota();
-                break;
-            case 2:
-                professor.consultarTurma();
-                break;
+            switch (opcao) {
+                case 1:
+                    professor.adicionarNota(sc);
+                    break;
+                case 2:
+                    for (String aluno : professor.consultarTurma()) {
+                        System.out.println(aluno);
+                    }
+                    break;
 
+            }
+        } catch(InputMismatchException exception){
+            System.out.println("ERRO:"+"Digite um número inteiro!");
+        }
         }
     }
     //Cadastrar usuário
@@ -81,26 +110,32 @@ public class Escolaridade {
         //Base para método de cadastro
 
         String cpf = null, senha = null, nome = null, sexo = null, cargo = null;
+        File file = null;
         int idade = 0;
+
         //LEMBRAR DE: VERIFICAR SE O CPF CONTÉM APENAS NÚMEROS
         try{
+
             System.out.println("Digite seu CPF (xxxxxxxxxxx):");
             cpf = sc.nextLine();
-            if(cpf.length()==11){
+            if(cpf.length()==11 && cpf.matches("[0-9]+")){
                 // tentar criar pasta no final apenas
-            if(new File("dados/"+cpf).mkdir()){
-                System.out.println("Digite uma senha:");
+            if(!(file = new File("dados/"+cpf)).exists()){
+                System.out.println("Digite uma senha (Mínimo 8 dígitos):");
                 senha = sc.nextLine();
-            System.out.println("Digite seu primeiro nome:");
-            nome = sc.nextLine();
-            System.out.println("Digite sua idade (xx):");
-            idade = sc.nextInt();
-            sc.nextLine();
-            System.out.println("Digite seu sexo (masculino/feminino):");
-            sexo = sc.nextLine();
-            //verificar se é aluno ou professor
+                System.out.println("Digite seu primeiro nome:");
+                nome = sc.nextLine();
+                System.out.println("Digite sua idade (xx):");
+                idade = sc.nextInt();
+                sc.nextLine();
+                System.out.println("Digite seu sexo (masculino/feminino):");
+                sexo = sc.nextLine();
+                //verificar se é aluno ou professor
                 System.out.println("Digite o cargo (Aluno/Professor):");
-            cargo = sc.nextLine();
+                cargo = sc.nextLine();
+
+
+
             } else{
                 System.out.println("O usuário já existe!");
             } }
@@ -109,11 +144,13 @@ public class Escolaridade {
             System.out.println("ERRO! Digite sua idade em números.");
         }
         //Validação dos dados
-        if(idade>=13
-                && (!nome.isEmpty()) &&
+        if(senha.length()>=8 && idade>=13 && idade <= 99
+                && (!nome.isEmpty()) && nome.toLowerCase().matches("[a-z]+") &&
                 (!sexo.isEmpty() && sexo.toLowerCase().equals("masculino") || sexo.toLowerCase().equals("feminino") ))
         {
             try{
+
+                file.mkdir();
 
                 BufferedWriter writer = new BufferedWriter(new FileWriter("dados/"+cpf+"/dados.txt"));
                 writer.write(cpf+" "+senha+" "+nome+" "+idade+" "+sexo+" "+ cargo);
@@ -177,9 +214,10 @@ public class Escolaridade {
                         //cpf, senha, nome,idade, sexo, cargo, formacao, turma
                         //String nome, int idade, String cpf, String sexo, String formacao, String senha, String cargo, String turmas
                         this.menuProfessor(sc, new Professor(dados[2],Integer.parseInt(dados[3]),dados[0], dados[4], dados[6], dados[1], dados[5], turmas));
+
                     }else if(dados[5].equalsIgnoreCase("aluno")){
                         //String cpf, String nome, int idade,String sexo, String senha, String cargo
-                        this.menuAluno(sc, new Aluno(dados[0],dados[2],Integer.parseInt(dados[3]),dados[4],dados[5],turmas));
+                        this.menuAluno(sc, new Aluno(dados[0], dados[2], Integer.parseInt(dados[3]), dados[4], dados[1], dados[5], turmas));
                     }
                     logado = true;
 
@@ -193,4 +231,6 @@ public class Escolaridade {
             System.out.println("ERRO:"+exception.getMessage());
         }
     }
+
+
 }
